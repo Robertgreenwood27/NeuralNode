@@ -2,7 +2,7 @@ import React, { useState, useCallback, memo, useEffect } from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
 import ChatInterface from './ChatInterface';
 
-function EditableNode({ data }) {
+function EditableNode({ data, id, selected }) {
   const [title, setTitle] = useState(data.label);
   const [showChat, setShowChat] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 280, height: 150 });
@@ -16,41 +16,47 @@ function EditableNode({ data }) {
     setShowChat((prev) => !prev);
   }, []);
 
-  const onResize = useCallback((event, { width, height }) => {
-    setDimensions({ width, height });
+  const onResize = useCallback((_, newDimensions) => {
+    setDimensions(newDimensions);
   }, []);
-
-  const isTooSmallForChat = dimensions.width < 200 || dimensions.height < 150;
 
   const handleNewMessage = useCallback((newMessage) => {
     setMessages(prevMessages => [...prevMessages, newMessage]);
   }, []);
 
-  // Persist messages in localStorage when they change
   useEffect(() => {
-    localStorage.setItem(`nodeMessages-${data.id}`, JSON.stringify(messages));
-  }, [messages, data.id]);
+    localStorage.setItem(`nodeMessages-${id}`, JSON.stringify(messages));
+  }, [messages, id]);
 
-  // Load messages from localStorage on component mount
   useEffect(() => {
-    const storedMessages = localStorage.getItem(`nodeMessages-${data.id}`);
+    const storedMessages = localStorage.getItem(`nodeMessages-${id}`);
     if (storedMessages) {
       setMessages(JSON.parse(storedMessages));
     }
-  }, [data.id]);
+  }, [id]);
+
+  // New effect to update node dimensions in the parent component
+  useEffect(() => {
+    data.onDimensionsChange(id, dimensions);
+  }, [data, id, dimensions]);
+
+  const isTooSmallForChat = dimensions.width < 200 || dimensions.height < 150;
+
+  const leftHandleStyle = { left: -8, top: dimensions.height / 2 };
+  const rightHandleStyle = { right: -8, top: dimensions.height / 2 };
 
   return (
     <>
       <NodeResizer 
         minWidth={100} 
         minHeight={50}
-        isVisible={true}
+        isVisible={selected}
         lineClassName="nodrag"
         handleClassName="nodrag"
         onResize={onResize}
       />
       <div className="editable-node" style={{ width: dimensions.width, height: dimensions.height }}>
-        <Handle type="target" position={Position.Left} />
+        <Handle type="target" position={Position.Left} style={leftHandleStyle} />
         <div className="node-content">
           <input
             value={title}
@@ -75,7 +81,7 @@ function EditableNode({ data }) {
             </>
           )}
         </div>
-        <Handle type="source" position={Position.Right} />
+        <Handle type="source" position={Position.Right} style={rightHandleStyle} />
       </div>
     </>
   );
