@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, memo, useEffect } from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
 import ChatInterface from './ChatInterface';
 
@@ -6,6 +6,7 @@ function EditableNode({ data }) {
   const [title, setTitle] = useState(data.label);
   const [showChat, setShowChat] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 280, height: 150 });
+  const [messages, setMessages] = useState([]);
 
   const handleTitleChange = useCallback((e) => {
     setTitle(e.target.value);
@@ -20,6 +21,23 @@ function EditableNode({ data }) {
   }, []);
 
   const isTooSmallForChat = dimensions.width < 200 || dimensions.height < 150;
+
+  const handleNewMessage = useCallback((newMessage) => {
+    setMessages(prevMessages => [...prevMessages, newMessage]);
+  }, []);
+
+  // Persist messages in localStorage when they change
+  useEffect(() => {
+    localStorage.setItem(`nodeMessages-${data.id}`, JSON.stringify(messages));
+  }, [messages, data.id]);
+
+  // Load messages from localStorage on component mount
+  useEffect(() => {
+    const storedMessages = localStorage.getItem(`nodeMessages-${data.id}`);
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages));
+    }
+  }, [data.id]);
 
   return (
     <>
@@ -48,7 +66,12 @@ function EditableNode({ data }) {
               >
                 {showChat ? 'Hide Chat' : 'Show Chat'}
               </button>
-              {showChat && <ChatInterface />}
+              {showChat && (
+                <ChatInterface
+                  messages={messages}
+                  onNewMessage={handleNewMessage}
+                />
+              )}
             </>
           )}
         </div>

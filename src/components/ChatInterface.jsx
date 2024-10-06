@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 
-const ChatInterface = () => {
-  const [messages, setMessages] = useState([]);
+const ChatInterface = ({ messages, onNewMessage }) => {
   const [input, setInput] = useState('');
   const scrollbarsRef = useRef(null);
 
@@ -19,15 +18,15 @@ const ChatInterface = () => {
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     if (input.trim()) {
-      setMessages(prevMessages => [...prevMessages, { text: input, sender: 'user' }]);
+      onNewMessage({ text: input, sender: 'user' });
       // Here you would typically call an API to get the AI's response
       // For now, we'll just echo the message
       setTimeout(() => {
-        setMessages(prevMessages => [...prevMessages, { text: `Echo: ${input}`, sender: 'ai' }]);
+        onNewMessage({ text: `Echo: ${input}`, sender: 'ai' });
       }, 500);
       setInput('');
     }
-  }, [input]);
+  }, [input, onNewMessage]);
 
   const handleInputChange = useCallback((e) => {
     setInput(e.target.value);
