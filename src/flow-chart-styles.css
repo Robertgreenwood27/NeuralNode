@@ -1,0 +1,198 @@
+/* ReactFlow control styles */
+.react-flow__controls-button {
+    color: black !important;
+  }
+  
+  .react-flow__controls {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  /* Node styles */
+  .editable-node {
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    padding: 15px 25px;
+    color: #ffffff;
+    width: 280px;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.6);
+    border: 1px solid #333;
+    font-family: 'Roboto', sans-serif;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .editable-node:hover {
+    transform: scale(1.02);
+  }
+  
+  .node-content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex-grow: 1;
+  }
+  
+  .node-title {
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #ff4757;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    padding: 8px 0;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  
+  .toggle-chat-btn {
+    background-color: #ff4757;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 6px 12px;
+    margin-bottom: 10px;
+    align-self: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-transform: uppercase;
+  }
+  
+  .toggle-chat-btn:hover {
+    background-color: #e04050;
+    transform: scale(1.05);
+  }
+  
+  /* Handle styles */
+  .react-flow__handle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ff4757;
+    position: absolute;
+  }
+  
+  .react-flow__handle-left {
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .react-flow__handle-right {
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  /* Chat interface styles */
+  .chat-interface {
+    display: flex;
+    flex-direction: column;
+    background-color: #282828;
+    border-radius: 6px;
+    padding: 10px;
+    border: 1px solid #444;
+    height: 200px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  .chat-messages {
+    flex-grow: 1;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+    padding-right: 10px;
+    max-width: 100%;
+  }
+  
+  .chat-messages::-webkit-scrollbar {
+    width: 8px;
+    background-color: #1a1a1a;
+  }
+  
+  .chat-messages::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+  }
+  
+  .chat-messages::-webkit-scrollbar-thumb:hover {
+    background-color: #777;
+  }
+  
+  .message {
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    max-width: 85%;
+    word-wrap: break-word;
+  }
+  
+  .message.user {
+    background-color: #3742fa;
+    color: #ffffff;
+    margin-left: auto;
+    border-left: 3px solid #1e90ff;
+  }
+  
+  .message.ai {
+    background-color: #5352ed;
+    color: #ffffff;
+    margin-right: auto;
+    border-left: 3px solid #2ed573;
+  }
+  
+  .chat-interface form {
+    display: flex;
+    max-width: 100%;
+  }
+  
+  .chat-interface input {
+    flex-grow: 1;
+    background-color: #2c2c2c;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    padding: 6px 8px;
+    color: #ffffff;
+    font-size: 13px;
+    min-width: 0;
+  }
+  
+  .chat-interface button {
+    background-color: #ff4757;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 6px 10px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+  }
+  
+  .chat-interface button:hover {
+    background-color: #e04050;
+  }
+  
+  /* Custom scrollbar track */
+  .track-vertical {
+    background-color: #1a1a1a;
+    border-radius: 4px;
+  }
+  
+  .thumb-vertical {
+    background-color: #555;
+  }
+  
+  .thumb-vertical:hover {
+    background-color: #777;
+  }

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -7,24 +7,34 @@ import {
   useEdgesState,
   addEdge,
 } from '@xyflow/react';
+import EditableNode from './EditableNode';
 import '@xyflow/react/dist/style.css';
-import '../FlowChart.css';  // Import the new CSS file
+import '../flow-chart-styles.css';
 
-const initialNodes = [
-  { id: '1', position: { x: 50, y: 50 }, data: { label: 'Node 1' } },
-  { id: '2', position: { x: 200, y: 200 }, data: { label: 'Node 2' } },
-];
-
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+const nodeTypes = {
+  editable: EditableNode,
+};
 
 export default function FlowChart() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodeId, setNodeId] = useState(1);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
+
+  const addNode = useCallback(() => {
+    const newNode = {
+      id: `${nodeId}`,
+      type: 'editable',
+      position: { x: Math.random() * 500, y: Math.random() * 500 },
+      data: { label: `Node ${nodeId}` },
+    };
+    setNodes((nds) => nds.concat(newNode));
+    setNodeId((nid) => nid + 1);
+  }, [nodeId, setNodes]);
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
@@ -34,11 +44,23 @@ export default function FlowChart() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        nodeTypes={nodeTypes}
         fitView
       >
         <Controls />
         <Background variant="dots" gap={12} size={1} />
       </ReactFlow>
+      <button
+        style={{
+          position: 'absolute',
+          right: 10,
+          top: 10,
+          zIndex: 4,
+        }}
+        onClick={addNode}
+      >
+        Add Node
+      </button>
     </div>
   );
 }
