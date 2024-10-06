@@ -5,6 +5,7 @@ import ChatInterface from './ChatInterface';
 function EditableNode({ data }) {
   const [title, setTitle] = useState(data.label);
   const [showChat, setShowChat] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 280, height: 150 });
 
   const handleTitleChange = useCallback((e) => {
     setTitle(e.target.value);
@@ -14,16 +15,23 @@ function EditableNode({ data }) {
     setShowChat((prev) => !prev);
   }, []);
 
+  const onResize = useCallback((event, { width, height }) => {
+    setDimensions({ width, height });
+  }, []);
+
+  const isTooSmallForChat = dimensions.width < 200 || dimensions.height < 150;
+
   return (
     <>
       <NodeResizer 
-        minWidth={200} 
-        minHeight={100}
+        minWidth={100} 
+        minHeight={50}
         isVisible={true}
         lineClassName="nodrag"
         handleClassName="nodrag"
+        onResize={onResize}
       />
-      <div className="editable-node">
+      <div className="editable-node" style={{ width: dimensions.width, height: dimensions.height }}>
         <Handle type="target" position={Position.Left} />
         <div className="node-content">
           <input
@@ -32,13 +40,17 @@ function EditableNode({ data }) {
             className="node-title nodrag"
             placeholder="Node Title"
           />
-          <button 
-            className="toggle-chat-btn nodrag"
-            onClick={toggleChat}
-          >
-            {showChat ? 'Hide Chat' : 'Show Chat'}
-          </button>
-          {showChat && <ChatInterface />}
+          {!isTooSmallForChat && (
+            <>
+              <button 
+                className="toggle-chat-btn nodrag"
+                onClick={toggleChat}
+              >
+                {showChat ? 'Hide Chat' : 'Show Chat'}
+              </button>
+              {showChat && <ChatInterface />}
+            </>
+          )}
         </div>
         <Handle type="source" position={Position.Right} />
       </div>
