@@ -11,6 +11,7 @@ import EditableNode from './EditableNode';
 import AnimatedBackground from '../AnimatedBackground/AnimatedBackground';
 import '@xyflow/react/dist/style.css';
 import './FlowChartStyles.css';
+import SignOutButton from '../Auth/SignOutButton';
 
 const nodeTypes = {
   editable: EditableNode,
@@ -94,11 +95,20 @@ const FlowChart = () => {
           right: 10,
           top: 10,
           zIndex: 4,
+          backgroundColor: 'rgba(0, 150, 255, 0.7)',
+          color: 'white',
+          border: 'none',
+          padding: '5px 10px',
+          borderRadius: '3px',
+          cursor: 'pointer',
+          fontSize: '12px',
+          fontWeight: 'bold',
         }}
         onClick={addNode}
       >
         Add Node
       </button>
+      <SignOutButton />
     </div>
   );
 }

@@ -5,10 +5,10 @@ src\assets
 src\components
 src\components\AnimatedBackground
 src\components\AnimatedBackground\AnimatedBackground.jsx
-src\components\AnimatedBackground\CustomBackground.jsx
 src\components\Auth
 src\components\Auth\Auth.jsx
 src\components\Auth\AuthStyles.css
+src\components\Auth\SignOutButton.jsx
 src\components\ChatInterface
 src\components\ChatInterface\ChatInterface.jsx
 src\components\FlowChart
