@@ -2,16 +2,15 @@ import React, { useCallback, useState } from 'react';
 import {
   ReactFlow,
   Controls,
-  Background,
   useNodesState,
   useEdgesState,
   addEdge,
   MarkerType,
 } from '@xyflow/react';
 import EditableNode from './EditableNode';
-import AnimatedBackground from './AnimatedBackground';
+import AnimatedBackground from '../AnimatedBackground/AnimatedBackground';
 import '@xyflow/react/dist/style.css';
-import '../flow-chart-styles.css';
+import './FlowChartStyles.css';
 
 const nodeTypes = {
   editable: EditableNode,
@@ -34,7 +33,7 @@ const customEdgeStyle = {
   filter: 'drop-shadow(0 0 5px #ff3333)',
 };
 
-export default function FlowChart() {
+const FlowChart = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [nodeId, setNodeId] = useState(1);
@@ -73,14 +72,6 @@ export default function FlowChart() {
     setNodeId((nid) => nid + 1);
   }, [nodeId, setNodes]);
 
-  const onNodeDragStop = useCallback(() => {
-    setEdges((eds) => eds.map((edge) => ({ ...edge, selected: true })));
-  }, [setEdges]);
-
-  const onNodeResize = useCallback(() => {
-    setEdges((eds) => eds.map((edge) => ({ ...edge, selected: true })));
-  }, [setEdges]);
-
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <AnimatedBackground />
@@ -92,13 +83,10 @@ export default function FlowChart() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
-        onNodeDragStop={onNodeDragStop}
-        onNodeResize={onNodeResize}
         fitView
         style={{ background: 'transparent' }}
       >
         <Controls />
-        <Background color="#aaa" gap={16} />
       </ReactFlow>
       <button
         style={{
@@ -114,3 +102,5 @@ export default function FlowChart() {
     </div>
   );
 }
+
+export default FlowChart;

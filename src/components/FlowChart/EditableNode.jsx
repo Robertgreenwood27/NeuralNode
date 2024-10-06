@@ -1,6 +1,6 @@
 import React, { useState, useCallback, memo, useEffect } from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
-import ChatInterface from './ChatInterface';
+import ChatInterface from '../ChatInterface/ChatInterface';
 
 function EditableNode({ data, id, selected }) {
   const [title, setTitle] = useState(data.label);
