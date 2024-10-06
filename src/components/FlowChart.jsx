@@ -2,12 +2,12 @@ import React, { useCallback, useState } from 'react';
 import {
   ReactFlow,
   Controls,
-  Background,
   useNodesState,
   useEdgesState,
   addEdge,
 } from '@xyflow/react';
 import EditableNode from './EditableNode';
+import AnimatedBackground from './AnimatedBackground';
 import '@xyflow/react/dist/style.css';
 import '../flow-chart-styles.css';
 
@@ -37,7 +37,8 @@ export default function FlowChart() {
   }, [nodeId, setNodes]);
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+      <AnimatedBackground />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -46,9 +47,9 @@ export default function FlowChart() {
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         fitView
+        style={{ background: 'transparent' }}
       >
         <Controls />
-        <Background variant="dots" gap={12} size={1} />
       </ReactFlow>
       <button
         style={{
