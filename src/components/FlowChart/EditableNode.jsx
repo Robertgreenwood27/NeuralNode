@@ -1,12 +1,13 @@
-import React, { useState, useCallback, memo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
 import ChatInterface from '../ChatInterface/ChatInterface';
+import { useFlowChart } from '../../context/FlowChartContext';
 
 function EditableNode({ data, id, selected }) {
+  const { state, dispatch } = useFlowChart();
   const [title, setTitle] = useState(data.label);
   const [showChat, setShowChat] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 280, height: 150 });
-  const [messages, setMessages] = useState([]);
 
   const handleTitleChange = useCallback((e) => {
     setTitle(e.target.value);
@@ -18,32 +19,32 @@ function EditableNode({ data, id, selected }) {
 
   const onResize = useCallback((_, newDimensions) => {
     setDimensions(newDimensions);
-  }, []);
+    if (data.onDimensionsChange) {
+      data.onDimensionsChange(newDimensions);
+    }
+  }, [data]);
 
   const handleNewMessage = useCallback((newMessage) => {
-    setMessages(prevMessages => [...prevMessages, newMessage]);
-  }, []);
+    dispatch({ type: 'ADD_MESSAGE', payload: { nodeId: id, message: newMessage } });
+  }, [dispatch, id]);
 
   useEffect(() => {
-    localStorage.setItem(`nodeMessages-${id}`, JSON.stringify(messages));
-  }, [messages, id]);
-
-  useEffect(() => {
-    const storedMessages = localStorage.getItem(`nodeMessages-${id}`);
-    if (storedMessages) {
-      setMessages(JSON.parse(storedMessages));
+    if (data.onDimensionsChange) {
+      data.onDimensionsChange(dimensions);
     }
-  }, [id]);
-
-  // New effect to update node dimensions in the parent component
-  useEffect(() => {
-    data.onDimensionsChange(id, dimensions);
-  }, [data, id, dimensions]);
+  }, [data, dimensions]);
 
   const isTooSmallForChat = dimensions.width < 200 || dimensions.height < 150;
 
-  const leftHandleStyle = { left: -8, top: dimensions.height / 2 };
-  const rightHandleStyle = { right: -8, top: dimensions.height / 2 };
+  const leftHandleStyle = useMemo(() => ({ left: -8, top: dimensions.height / 2 }), [dimensions.height]);
+  const rightHandleStyle = useMemo(() => ({ right: -8, top: dimensions.height / 2 }), [dimensions.height]);
+
+  const chatInterface = useMemo(() => (
+    <ChatInterface
+      messages={state.chatHistories[id] || []}
+      onNewMessage={handleNewMessage}
+    />
+  ), [state.chatHistories, id, handleNewMessage]);
 
   return (
     <>
@@ -72,12 +73,7 @@ function EditableNode({ data, id, selected }) {
               >
                 {showChat ? 'Hide Chat' : 'Show Chat'}
               </button>
-              {showChat && (
-                <ChatInterface
-                  messages={messages}
-                  onNewMessage={handleNewMessage}
-                />
-              )}
+              {showChat && chatInterface}
             </>
           )}
         </div>
@@ -87,4 +83,13 @@ function EditableNode({ data, id, selected }) {
   );
 }
 
-export default memo(EditableNode);
+function areEqual(prevProps, nextProps) {
+  return (
+    prevProps.id === nextProps.id &&
+    prevProps.selected === nextProps.selected &&
+    prevProps.data.label === nextProps.data.label &&
+    prevProps.data.onDimensionsChange === nextProps.data.onDimensionsChange
+  );
+}
+
+export default React.memo(EditableNode, areEqual);
