@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
   ReactFlow,
   Controls,
+  Background,
   useNodesState,
   useEdgesState,
   addEdge,
@@ -14,6 +15,17 @@ import '../flow-chart-styles.css';
 const nodeTypes = {
   editable: EditableNode,
 };
+
+const EdgeGradient = () => (
+  <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+    <defs>
+      <linearGradient id="edge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="rgba(255, 0, 0, 0.5)" />
+        <stop offset="100%" stopColor="rgba(255, 100, 100, 0.5)" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
 
 export default function FlowChart() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -39,6 +51,7 @@ export default function FlowChart() {
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <AnimatedBackground />
+      <EdgeGradient />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -50,6 +63,7 @@ export default function FlowChart() {
         style={{ background: 'transparent' }}
       >
         <Controls />
+        <Background color="#aaa" gap={16} />
       </ReactFlow>
       <button
         style={{

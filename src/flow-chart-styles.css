@@ -85,6 +85,13 @@
     background-color: rgba(0, 150, 255, 0.5);
     border: 2px solid rgba(0, 150, 255, 0.3);
     position: absolute;
+    transition: all 0.3s ease;
+}
+
+.react-flow__handle:hover {
+    background-color: rgba(255, 50, 50, 0.9);
+    border-color: rgba(255, 150, 150, 0.7);
+    box-shadow: 0 0 10px rgba(255, 50, 50, 0.7);
 }
 
 .react-flow__handle-left {
@@ -219,4 +226,24 @@
 
 .react-flow__node-editable .react-flow__resize-control.line {
     background-color: rgba(0, 150, 255, 0.3);
+}
+
+/* Enhanced Edge styles */
+.react-flow__edge-path {
+    stroke: url(#edge-gradient) !important;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.5));
+}
+
+.react-flow__edge {
+    animation: edgePulse 4s infinite;
+}
+
+@keyframes edgePulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.8));
+    }
 }
