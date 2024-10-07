@@ -1,3 +1,0 @@
-Each node will have it's own ai chat.
-since it's a tree structure, each chat will have context of it's parent nodes, but not it's sibling nodes.
-This will allow for power idea iteration.
