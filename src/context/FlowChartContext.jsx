@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { auth, db } from '../services/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 
 const FlowChartContext = createContext();
 
@@ -10,6 +10,7 @@ const initialState = {
   nodes: [],
   edges: [],
   chatHistories: {},
+  deletedNodes: [],
   isLoading: true,
   dataLoaded: false,
 };
@@ -36,6 +37,48 @@ function flowChartReducer(state, action) {
           ...state.chatHistories,
           [nodeId]: [...(state.chatHistories[nodeId] || []), message],
         },
+      };
+    case 'UPDATE_NODE_TITLE':
+      return {
+        ...state,
+        nodes: state.nodes.map(node =>
+          node.id === action.payload.id
+            ? { ...node, data: { ...node.data, label: action.payload.title } }
+            : node
+        ),
+      };
+    case 'DELETE_NODE':
+      const deletedNode = state.nodes.find(node => node.id === action.payload.id);
+      const deletedEdges = state.edges.filter(edge => edge.source === action.payload.id || edge.target === action.payload.id);
+      return {
+        ...state,
+        nodes: state.nodes.filter(node => node.id !== action.payload.id),
+        edges: state.edges.filter(edge => edge.source !== action.payload.id && edge.target !== action.payload.id),
+        chatHistories: Object.fromEntries(
+          Object.entries(state.chatHistories).filter(([key]) => key !== action.payload.id)
+        ),
+        deletedNodes: [
+          ...state.deletedNodes,
+          { node: deletedNode, edges: deletedEdges, chatHistory: state.chatHistories[action.payload.id] }
+        ],
+      };
+    case 'UNDO_DELETE':
+      if (state.deletedNodes.length === 0) return state;
+      const lastDeleted = state.deletedNodes[state.deletedNodes.length - 1];
+      return {
+        ...state,
+        nodes: [...state.nodes, lastDeleted.node],
+        edges: [...state.edges, ...lastDeleted.edges],
+        chatHistories: {
+          ...state.chatHistories,
+          [lastDeleted.node.id]: lastDeleted.chatHistory
+        },
+        deletedNodes: state.deletedNodes.slice(0, -1),
+      };
+    case 'SET_DELETED_NODES':
+      return {
+        ...state,
+        deletedNodes: action.payload,
       };
     default:
       return state;
@@ -85,7 +128,6 @@ export function FlowChartProvider({ children }) {
       if (user) {
         loadUserData(user.uid);
       } else {
-        // Clear data when user signs out
         dispatch({ type: 'SET_NODES', payload: [] });
         dispatch({ type: 'SET_EDGES', payload: [] });
         dispatch({ type: 'SET_CHAT_HISTORIES', payload: {} });
@@ -101,10 +143,11 @@ export function FlowChartProvider({ children }) {
     if (state.user) {
       const userDocRef = doc(db, 'users', state.user.uid);
       const nodesToSave = state.nodes.map(node => ({
-        ...node,
+        id: node.id,
+        type: node.type,
+        position: node.position,
         data: {
-          ...node.data,
-          onDimensionsChange: null // Remove the function
+          label: node.data.label
         }
       }));
       const dataToSave = removeCircularReferences({
@@ -113,8 +156,15 @@ export function FlowChartProvider({ children }) {
         chatHistories: state.chatHistories,
       });
       try {
-        await setDoc(userDocRef, dataToSave, { merge: true });
+        // First, delete the existing document
+        await deleteDoc(userDocRef);
+        
+        // Then, create a new document with the current state
+        await setDoc(userDocRef, dataToSave);
+        
         console.log('Data saved successfully');
+        // Clear the deletedNodes array after successful save
+        dispatch({ type: 'SET_DELETED_NODES', payload: [] });
       } catch (error) {
         console.error('Error saving data: ', error);
       }

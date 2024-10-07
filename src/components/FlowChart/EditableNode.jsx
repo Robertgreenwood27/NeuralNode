@@ -10,8 +10,10 @@ function EditableNode({ data, id, selected }) {
   const [dimensions, setDimensions] = useState({ width: 280, height: 150 });
 
   const handleTitleChange = useCallback((e) => {
-    setTitle(e.target.value);
-  }, []);
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    dispatch({ type: 'UPDATE_NODE_TITLE', payload: { id, title: newTitle } });
+  }, [dispatch, id]);
 
   const toggleChat = useCallback(() => {
     setShowChat((prev) => !prev);
@@ -19,20 +21,15 @@ function EditableNode({ data, id, selected }) {
 
   const onResize = useCallback((_, newDimensions) => {
     setDimensions(newDimensions);
-    if (data.onDimensionsChange) {
-      data.onDimensionsChange(newDimensions);
-    }
-  }, [data]);
+  }, []);
 
   const handleNewMessage = useCallback((newMessage) => {
     dispatch({ type: 'ADD_MESSAGE', payload: { nodeId: id, message: newMessage } });
   }, [dispatch, id]);
 
-  useEffect(() => {
-    if (data.onDimensionsChange) {
-      data.onDimensionsChange(dimensions);
-    }
-  }, [data, dimensions]);
+  const handleDeleteNode = useCallback(() => {
+    dispatch({ type: 'DELETE_NODE', payload: { id } });
+  }, [dispatch, id]);
 
   const isTooSmallForChat = dimensions.width < 200 || dimensions.height < 150;
 
@@ -76,6 +73,12 @@ function EditableNode({ data, id, selected }) {
               {showChat && chatInterface}
             </>
           )}
+          <button
+            className="delete-node-btn nodrag"
+            onClick={handleDeleteNode}
+          >
+            Delete Node
+          </button>
         </div>
         <Handle type="source" position={Position.Right} style={rightHandleStyle} />
       </div>
@@ -83,13 +86,4 @@ function EditableNode({ data, id, selected }) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  return (
-    prevProps.id === nextProps.id &&
-    prevProps.selected === nextProps.selected &&
-    prevProps.data.label === nextProps.data.label &&
-    prevProps.data.onDimensionsChange === nextProps.data.onDimensionsChange
-  );
-}
-
-export default React.memo(EditableNode, areEqual);
+export default React.memo(EditableNode);

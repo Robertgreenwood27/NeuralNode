@@ -108,6 +108,10 @@ const FlowChart = () => {
     saveUserData();
   }, [saveUserData]);
 
+  const handleUndoDelete = useCallback(() => {
+    dispatch({ type: 'UNDO_DELETE' });
+  }, [dispatch]);
+
   const memoizedFlow = useMemo(() => (
     <ReactFlow
       nodes={nodes}
@@ -169,6 +173,26 @@ const FlowChart = () => {
         onClick={handleSave}
       >
         Save
+      </button>
+      <button
+        style={{
+          position: 'absolute',
+          right: 10,
+          top: 90,
+          zIndex: 4,
+          backgroundColor: 'rgba(255, 165, 0, 0.7)',
+          color: 'white',
+          border: 'none',
+          padding: '5px 10px',
+          borderRadius: '3px',
+          cursor: 'pointer',
+          fontSize: '12px',
+          fontWeight: 'bold',
+        }}
+        onClick={handleUndoDelete}
+        disabled={state.deletedNodes.length === 0}
+      >
+        Undo Delete
       </button>
       <SignOutButton />
     </div>
