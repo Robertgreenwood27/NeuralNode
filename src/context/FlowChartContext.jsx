@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback } 
 import { auth, db } from '../services/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import openaiService from '../services/OpenAIService';
 
 const FlowChartContext = createContext();
 
@@ -13,6 +14,7 @@ const initialState = {
   deletedNodes: [],
   isLoading: true,
   dataLoaded: false,
+  aiLoading: {},
 };
 
 function flowChartReducer(state, action) {
@@ -79,6 +81,22 @@ function flowChartReducer(state, action) {
       return {
         ...state,
         deletedNodes: action.payload,
+      };
+    case 'SET_AI_LOADING':
+      return {
+        ...state,
+        aiLoading: action.payload.nodeId ?
+          { ...state.aiLoading, [action.payload.nodeId]: action.payload.loading } :
+          action.payload
+      };
+    case 'ADD_AI_MESSAGE':
+      const { nodeId: aiNodeId, message: aiMessage } = action.payload;
+      return {
+        ...state,
+        chatHistories: {
+          ...state.chatHistories,
+          [aiNodeId]: [...(state.chatHistories[aiNodeId] || []), { ...aiMessage, isAI: true }],
+        },
       };
     default:
       return state;
@@ -171,8 +189,26 @@ export function FlowChartProvider({ children }) {
     }
   }, [state.user, state.nodes, state.edges, state.chatHistories]);
 
+  const generateAIResponse = useCallback(async (nodeId, messages) => {
+    dispatch({ type: 'SET_AI_LOADING', payload: { nodeId, loading: true } });
+    try {
+      const aiResponse = await openaiService.generateResponse(messages);
+      const aiMessage = { text: aiResponse, sender: 'ai' };
+      dispatch({
+        type: 'ADD_MESSAGE',
+        payload: { nodeId, message: aiMessage }
+      });
+      return aiMessage;
+    } catch (error) {
+      console.error('Error generating AI response:', error);
+      // Handle error (e.g., dispatch an error action)
+    } finally {
+      dispatch({ type: 'SET_AI_LOADING', payload: { nodeId, loading: false } });
+    }
+  }, [dispatch]);
+
   return (
-    <FlowChartContext.Provider value={{ state, dispatch, saveUserData }}>
+    <FlowChartContext.Provider value={{ state, dispatch, saveUserData, generateAIResponse }}>
       {children}
     </FlowChartContext.Provider>
   );

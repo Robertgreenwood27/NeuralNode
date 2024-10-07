@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { useFlowChart } from '../../context/FlowChartContext';
 
-const ChatInterface = ({ messages, onNewMessage }) => {
+const ChatInterface = ({ messages, nodeId }) => {
   const [input, setInput] = useState('');
   const scrollbarsRef = useRef(null);
+  const { state, dispatch, generateAIResponse } = useFlowChart();
 
   const scrollToBottom = useCallback(() => {
     if (scrollbarsRef.current) {
@@ -15,18 +17,26 @@ const ChatInterface = ({ messages, onNewMessage }) => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  const handleSubmit = useCallback((e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (input.trim()) {
-      onNewMessage({ text: input, sender: 'user' });
-      // Here you would typically call an API to get the AI's response
-      // For now, we'll just echo the message
-      setTimeout(() => {
-        onNewMessage({ text: `Echo: ${input}`, sender: 'ai' });
-      }, 500);
+      const userMessage = { text: input, sender: 'user' };
+      dispatch({ type: 'ADD_MESSAGE', payload: { nodeId, message: userMessage } });
       setInput('');
+      
+      // Prepare messages for AI, including full conversation history
+      const conversationHistory = [
+        ...messages,
+        userMessage
+      ].map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      }));
+      
+      // Generate AI response
+      await generateAIResponse(nodeId, conversationHistory);
     }
-  }, [input, onNewMessage]);
+  }, [input, nodeId, messages, dispatch, generateAIResponse]);
 
   const handleInputChange = useCallback((e) => {
     setInput(e.target.value);
@@ -37,8 +47,8 @@ const ChatInterface = ({ messages, onNewMessage }) => {
   }, []);
 
   return (
-    <div 
-      className="chat-interface nodrag" 
+    <div
+      className="chat-interface nodrag"
       onMouseDown={preventPropagation}
       onClick={preventPropagation}
     >
@@ -60,6 +70,7 @@ const ChatInterface = ({ messages, onNewMessage }) => {
             {msg.text}
           </div>
         ))}
+        {state.aiLoading[nodeId] && <div className="message ai">AI is thinking...</div>}
       </Scrollbars>
       <form onSubmit={handleSubmit}>
         <input

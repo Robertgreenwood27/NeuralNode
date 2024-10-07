@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Handle, Position, NodeResizer } from '@xyflow/react';
 import ChatInterface from '../ChatInterface/ChatInterface';
 import { useFlowChart } from '../../context/FlowChartContext';
@@ -39,14 +39,14 @@ function EditableNode({ data, id, selected }) {
   const chatInterface = useMemo(() => (
     <ChatInterface
       messages={state.chatHistories[id] || []}
-      onNewMessage={handleNewMessage}
+      nodeId={id}
     />
-  ), [state.chatHistories, id, handleNewMessage]);
+  ), [state.chatHistories, id]);
 
   return (
     <>
-      <NodeResizer 
-        minWidth={100} 
+      <NodeResizer
+        minWidth={100}
         minHeight={50}
         isVisible={selected}
         lineClassName="nodrag"
@@ -64,7 +64,7 @@ function EditableNode({ data, id, selected }) {
           />
           {!isTooSmallForChat && (
             <>
-              <button 
+              <button
                 className="toggle-chat-btn nodrag"
                 onClick={toggleChat}
               >
