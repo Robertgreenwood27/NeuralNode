@@ -1,11 +1,13 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { useFlowChart } from '../../context/FlowChartContext';
 
-const ChatInterface = ({ messages, nodeId }) => {
+const ChatInterface = ({ nodeId }) => {
   const [input, setInput] = useState('');
   const scrollbarsRef = useRef(null);
-  const { state, dispatch, generateAIResponse } = useFlowChart();
+  const { state, dispatch, generateAIResponse, getCombinedChatHistory } = useFlowChart();
+
+  const messages = useMemo(() => getCombinedChatHistory(nodeId), [getCombinedChatHistory, nodeId]);
 
   const scrollToBottom = useCallback(() => {
     if (scrollbarsRef.current) {
@@ -24,19 +26,15 @@ const ChatInterface = ({ messages, nodeId }) => {
       dispatch({ type: 'ADD_MESSAGE', payload: { nodeId, message: userMessage } });
       setInput('');
       
-      // Prepare messages for AI, including full conversation history
-      const conversationHistory = [
-        ...messages,
-        userMessage
-      ].map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'assistant',
-        content: msg.text
-      }));
-      
-      // Generate AI response
-      await generateAIResponse(nodeId, conversationHistory);
+      console.log('Sending message to AI:', userMessage);
+      try {
+        const aiMessage = await generateAIResponse(nodeId, [userMessage]);
+        console.log('Received AI response:', aiMessage);
+      } catch (error) {
+        console.error('Error in AI response:', error);
+      }
     }
-  }, [input, nodeId, messages, dispatch, generateAIResponse]);
+  }, [input, nodeId, dispatch, generateAIResponse]);
 
   const handleInputChange = useCallback((e) => {
     setInput(e.target.value);
@@ -45,6 +43,9 @@ const ChatInterface = ({ messages, nodeId }) => {
   const preventPropagation = useCallback((e) => {
     e.stopPropagation();
   }, []);
+
+  console.log('Rendering ChatInterface for node:', nodeId);
+  console.log('Number of messages:', messages.length);
 
   return (
     <div
@@ -65,11 +66,15 @@ const ChatInterface = ({ messages, nodeId }) => {
         }
         className="chat-messages"
       >
-        {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.sender}`}>
-            {msg.text}
-          </div>
-        ))}
+        {messages.length === 0 ? (
+          <div className="message system">No messages yet. Start a conversation!</div>
+        ) : (
+          messages.map((msg, index) => (
+            <div key={index} className={`message ${msg.sender}`}>
+              <strong>{msg.sender}:</strong> {msg.text}
+            </div>
+          ))
+        )}
         {state.aiLoading[nodeId] && <div className="message ai">AI is thinking...</div>}
       </Scrollbars>
       <form onSubmit={handleSubmit}>
@@ -85,4 +90,4 @@ const ChatInterface = ({ messages, nodeId }) => {
   );
 };
 
-export default ChatInterface;
+export default React.memo(ChatInterface);

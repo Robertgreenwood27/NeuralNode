@@ -32,12 +32,15 @@ function flowChartReducer(state, action) {
     case 'SET_DATA_LOADED':
       return { ...state, dataLoaded: action.payload };
     case 'ADD_MESSAGE':
-      const { nodeId, message } = action.payload;
+      console.log('Adding message:', action.payload);
       return {
         ...state,
         chatHistories: {
           ...state.chatHistories,
-          [nodeId]: [...(state.chatHistories[nodeId] || []), message],
+          [action.payload.nodeId]: [
+            ...(state.chatHistories[action.payload.nodeId] || []),
+            action.payload.message
+          ],
         },
       };
     case 'UPDATE_NODE_TITLE':
@@ -189,10 +192,40 @@ export function FlowChartProvider({ children }) {
     }
   }, [state.user, state.nodes, state.edges, state.chatHistories]);
 
+  const getNodeLineage = useCallback((nodeId) => {
+    const lineage = [];
+    let currentId = nodeId;
+
+    while (currentId) {
+      lineage.unshift(currentId);
+      const parentEdge = state.edges.find(edge => edge.target === currentId);
+      currentId = parentEdge ? parentEdge.source : null;
+    }
+
+    return lineage;
+  }, [state.edges]);
+
+  const getCombinedChatHistory = useCallback((nodeId) => {
+    const lineage = getNodeLineage(nodeId);
+    return lineage.flatMap(id => state.chatHistories[id] || []);
+  }, [getNodeLineage, state.chatHistories]);
+
   const generateAIResponse = useCallback(async (nodeId, messages) => {
     dispatch({ type: 'SET_AI_LOADING', payload: { nodeId, loading: true } });
     try {
-      const aiResponse = await openaiService.generateResponse(messages);
+      console.log('Generating AI response for node:', nodeId);
+      const combinedHistory = getCombinedChatHistory(nodeId);
+      console.log('Combined history:', combinedHistory);
+      
+      const contextualizedMessages = [
+        ...combinedHistory,
+        ...messages
+      ];
+      console.log('Contextualized messages:', contextualizedMessages);
+      
+      const aiResponse = await openaiService.generateResponse(contextualizedMessages);
+      console.log('AI response received:', aiResponse);
+      
       const aiMessage = { text: aiResponse, sender: 'ai' };
       dispatch({
         type: 'ADD_MESSAGE',
@@ -201,14 +234,17 @@ export function FlowChartProvider({ children }) {
       return aiMessage;
     } catch (error) {
       console.error('Error generating AI response:', error);
-      // Handle error (e.g., dispatch an error action)
+      dispatch({
+        type: 'ADD_MESSAGE',
+        payload: { nodeId, message: { text: 'Sorry, I encountered an error. Please try again.', sender: 'ai' } }
+      });
     } finally {
       dispatch({ type: 'SET_AI_LOADING', payload: { nodeId, loading: false } });
     }
-  }, [dispatch]);
+  }, [dispatch, getCombinedChatHistory]);
 
   return (
-    <FlowChartContext.Provider value={{ state, dispatch, saveUserData, generateAIResponse }}>
+    <FlowChartContext.Provider value={{ state, dispatch, saveUserData, generateAIResponse, getCombinedChatHistory }}>
       {children}
     </FlowChartContext.Provider>
   );
