@@ -16,60 +16,26 @@ const AnimatedBackground = () => {
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    const nodes = [];
-    const nodeCount = 80;
-    const nodeBaseRadius = 1.5;  // Slightly larger nodes
-    const lineWidth = 1;
-    const maxLineDistance = 200;
-    const nodeColor = 'rgba(0, 150, 255, 0.2)';  // Slightly more opaque
-    const lineColor = 'rgba(0, 150, 255, 0.2)';  // Slightly more opaque
+    const cellSize = 50;
+    const lineColor = 'rgba(0, 150, 255, 0.4)';
 
-    for (let i = 0; i < nodeCount; i++) {
-      nodes.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 1,
-        vy: (Math.random() - 0.5) * 1,
-      });
-    }
-
-    const update = () => {
+    const drawGrid = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      nodes.forEach(node => {
-        node.x += node.vx;
-        node.y += node.vy;
-
-        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
-
-        ctx.fillStyle = nodeColor;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, nodeBaseRadius, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
       ctx.strokeStyle = lineColor;
-      ctx.lineWidth = lineWidth;
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+      ctx.lineWidth = 1;
 
-          if (dist < maxLineDistance) {
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.stroke();
-          }
+      for (let x = 0; x < canvas.width; x += cellSize) {
+        for (let y = 0; y < canvas.height; y += cellSize) {
+          ctx.beginPath();
+          ctx.rect(x, y, cellSize, cellSize);
+          ctx.stroke();
         }
       }
 
-      animationFrameId = requestAnimationFrame(update);
+      animationFrameId = requestAnimationFrame(drawGrid);
     };
 
-    update();
+    drawGrid();
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
