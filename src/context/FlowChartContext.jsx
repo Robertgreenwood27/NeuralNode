@@ -101,6 +101,18 @@ function flowChartReducer(state, action) {
           [aiNodeId]: [...(state.chatHistories[aiNodeId] || []), { ...aiMessage, isAI: true }],
         },
       };
+    case 'EDIT_MESSAGE':
+      return {
+        ...state,
+        chatHistories: {
+          ...state.chatHistories,
+          [action.payload.nodeId]: state.chatHistories[action.payload.nodeId].map(msg =>
+            msg.id === action.payload.messageId
+              ? { ...msg, text: action.payload.newText }
+              : msg
+          ),
+        },
+      };
     default:
       return state;
   }

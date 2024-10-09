@@ -1,17 +1,18 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Scrollbars } from 'react-custom-scrollbars-2';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useFlowChart } from '../../context/FlowChartContext';
 
-const ChatInterface = ({ nodeId }) => {
+const ChatInterface = React.memo(({ nodeId }) => {
   const [input, setInput] = useState('');
-  const scrollbarsRef = useRef(null);
-  const { state, dispatch, generateAIResponse, getCombinedChatHistory } = useFlowChart();
+  const [editingMessage, setEditingMessage] = useState(null);
+  const chatContainerRef = useRef(null);
+  const editInputRef = useRef(null);
+  const { state, dispatch, generateAIResponse } = useFlowChart();
 
-  const messages = useMemo(() => getCombinedChatHistory(nodeId), [getCombinedChatHistory, nodeId]);
+  const messages = state.chatHistories[nodeId] || [];
 
   const scrollToBottom = useCallback(() => {
-    if (scrollbarsRef.current) {
-      scrollbarsRef.current.scrollToBottom();
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, []);
 
@@ -19,17 +20,21 @@ const ChatInterface = ({ nodeId }) => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
+  useEffect(() => {
+    if (editingMessage && editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  }, [editingMessage]);
+
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (input.trim()) {
-      const userMessage = { text: input, sender: 'user' };
+      const userMessage = { id: Date.now(), text: input, sender: 'user' };
       dispatch({ type: 'ADD_MESSAGE', payload: { nodeId, message: userMessage } });
       setInput('');
       
-      console.log('Sending message to AI:', userMessage);
       try {
-        const aiMessage = await generateAIResponse(nodeId, [userMessage]);
-        console.log('Received AI response:', aiMessage);
+        await generateAIResponse(nodeId, [userMessage]);
       } catch (error) {
         console.error('Error in AI response:', error);
       }
@@ -40,12 +45,40 @@ const ChatInterface = ({ nodeId }) => {
     setInput(e.target.value);
   }, []);
 
+  const startEditing = useCallback((message) => {
+    setEditingMessage({ ...message });
+  }, []);
+
+  const handleEditChange = useCallback((e) => {
+    setEditingMessage(prev => ({ ...prev, text: e.target.value }));
+  }, []);
+
+  const saveEdit = useCallback(() => {
+    if (editingMessage) {
+      dispatch({
+        type: 'EDIT_MESSAGE',
+        payload: { nodeId, messageId: editingMessage.id, newText: editingMessage.text }
+      });
+      setEditingMessage(null);
+    }
+  }, [dispatch, nodeId, editingMessage]);
+
+  const cancelEdit = useCallback(() => {
+    setEditingMessage(null);
+  }, []);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      saveEdit();
+    } else if (e.key === 'Escape') {
+      cancelEdit();
+    }
+  }, [saveEdit, cancelEdit]);
+
   const preventPropagation = useCallback((e) => {
     e.stopPropagation();
   }, []);
-
-  console.log('Rendering ChatInterface for node:', nodeId);
-  console.log('Number of messages:', messages.length);
 
   return (
     <div
@@ -53,30 +86,49 @@ const ChatInterface = ({ nodeId }) => {
       onMouseDown={preventPropagation}
       onClick={preventPropagation}
     >
-      <Scrollbars
-        ref={scrollbarsRef}
-        autoHide
-        autoHideTimeout={1000}
-        autoHideDuration={200}
-        renderTrackVertical={({ style, ...props }) =>
-          <div {...props} className="track-vertical" style={{...style, right: 0, bottom: 2, top: 2, width: 8}} />
-        }
-        renderThumbVertical={({ style, ...props }) =>
-          <div {...props} className="thumb-vertical" style={{...style, borderRadius: 4}} />
-        }
+      <div
+        ref={chatContainerRef}
         className="chat-messages"
+        style={{
+          overflowY: 'auto',
+          maxHeight: '200px',
+          padding: '10px',
+          marginBottom: '10px'
+        }}
       >
         {messages.length === 0 ? (
           <div className="message system">No messages yet. Start a conversation!</div>
         ) : (
-          messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.sender}`}>
-              <strong>{msg.sender}:</strong> {msg.text}
+          messages.map((msg) => (
+            <div key={msg.id} className={`message ${msg.sender}`}>
+              {editingMessage && editingMessage.id === msg.id ? (
+                <div className="edit-message-container">
+                  <textarea
+                    ref={editInputRef}
+                    value={editingMessage.text}
+                    onChange={handleEditChange}
+                    onKeyDown={handleKeyDown}
+                    onBlur={saveEdit}
+                    autoFocus
+                  />
+                  <div className="edit-buttons">
+                    <button onClick={saveEdit}>Save</button>
+                    <button onClick={cancelEdit}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onDoubleClick={() => startEditing(msg)}
+                  style={{ userSelect: 'text', cursor: 'text' }}
+                >
+                  <strong>{msg.sender}:</strong> {msg.text}
+                </div>
+              )}
             </div>
           ))
         )}
         {state.aiLoading[nodeId] && <div className="message ai">AI is thinking...</div>}
-      </Scrollbars>
+      </div>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -88,6 +140,6 @@ const ChatInterface = ({ nodeId }) => {
       </form>
     </div>
   );
-};
+});
 
-export default React.memo(ChatInterface);
+export default ChatInterface;

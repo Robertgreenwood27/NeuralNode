@@ -3,7 +3,7 @@ import { Handle, Position, NodeResizer } from '@xyflow/react';
 import ChatInterface from '../ChatInterface/ChatInterface';
 import { useFlowChart } from '../../context/FlowChartContext';
 
-function EditableNode({ data, id, selected }) {
+const EditableNode = React.memo(({ data, id, selected }) => {
   const { state, dispatch } = useFlowChart();
   const [title, setTitle] = useState(data.label);
   const [showChat, setShowChat] = useState(false);
@@ -23,10 +23,6 @@ function EditableNode({ data, id, selected }) {
     setDimensions(newDimensions);
   }, []);
 
-  const handleNewMessage = useCallback((newMessage) => {
-    dispatch({ type: 'ADD_MESSAGE', payload: { nodeId: id, message: newMessage } });
-  }, [dispatch, id]);
-
   const handleDeleteNode = useCallback(() => {
     dispatch({ type: 'DELETE_NODE', payload: { id } });
   }, [dispatch, id]);
@@ -37,11 +33,8 @@ function EditableNode({ data, id, selected }) {
   const rightHandleStyle = useMemo(() => ({ right: -8, top: dimensions.height / 2 }), [dimensions.height]);
 
   const chatInterface = useMemo(() => (
-    <ChatInterface
-      messages={state.chatHistories[id] || []}
-      nodeId={id}
-    />
-  ), [state.chatHistories, id]);
+    <ChatInterface nodeId={id} />
+  ), [id]);
 
   return (
     <>
@@ -84,6 +77,6 @@ function EditableNode({ data, id, selected }) {
       </div>
     </>
   );
-}
+});
 
-export default React.memo(EditableNode);
+export default EditableNode;
