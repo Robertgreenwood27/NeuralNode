@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useFlowChart } from '../../context/FlowChartContext';
 
-const ChatInterface = React.memo(({ nodeId }) => {
+const ChatInterface = React.memo(({ nodeId, fullScreen = false }) => {
   const [input, setInput] = useState('');
   const [editingMessage, setEditingMessage] = useState(null);
   const chatContainerRef = useRef(null);
@@ -113,7 +113,7 @@ const ChatInterface = React.memo(({ nodeId }) => {
 
   return (
     <div
-      className="chat-interface nodrag"
+      className={`chat-interface nodrag ${fullScreen ? 'full-screen' : ''}`}
       onMouseDown={preventPropagation}
       onClick={preventPropagation}
     >
@@ -122,7 +122,7 @@ const ChatInterface = React.memo(({ nodeId }) => {
         className="chat-messages"
         style={{
           overflowY: 'auto',
-          maxHeight: '400px', // Increased max height
+          maxHeight: fullScreen ? 'calc(100vh - 200px)' : '400px',
           padding: '10px',
           marginBottom: '10px'
         }}
@@ -143,7 +143,7 @@ const ChatInterface = React.memo(({ nodeId }) => {
           value={input}
           onChange={handleInputChange}
           placeholder="Type a message..."
-          rows="3" // Increased number of rows
+          rows={fullScreen ? "5" : "3"}
           style={{ width: '100%', resize: 'vertical' }}
         />
         <button type="submit">Send</button>

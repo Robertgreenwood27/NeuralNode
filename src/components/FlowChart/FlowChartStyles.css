@@ -391,3 +391,170 @@
     transition: all 0.3s ease;
     white-space: nowrap;
   }
+
+  /* ... (previous styles remain the same) */
+
+.full-screen-node {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .full-screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .full-screen-title {
+    font-size: 24px;
+    color: #e0e0e0;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(0, 150, 255, 0.3);
+    padding: 5px 0;
+    width: 70%;
+  }
+  
+  .close-full-screen {
+    background-color: rgba(255, 50, 50, 0.7);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .close-full-screen:hover {
+    background-color: rgba(255, 50, 50, 0.9);
+  }
+  
+  .full-screen-content {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+  
+  .chat-interface.full-screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chat-interface.full-screen .chat-messages {
+    max-height: calc(100vh - 200px);
+    flex-grow: 1;
+  }
+  
+  .chat-interface.full-screen form {
+    position: sticky;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-top: 1px solid rgba(0, 150, 255, 0.3);
+  }
+  
+  .chat-interface.full-screen textarea {
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .chat-interface.full-screen button {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+  
+  .full-screen-btn {
+    background-color: rgba(0, 150, 255, 0.2);
+    border: 1px solid rgba(0, 150, 255, 0.3);
+    border-radius: 20px;
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    align-self: center;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  
+  .full-screen-btn:hover {
+    background-color: rgba(0, 150, 255, 0.3);
+    box-shadow: 0 0 5px rgba(0, 150, 255, 0.3);
+  }
+  
+  /* Transition for entering/exiting full-screen mode */
+  .full-screen-node-enter {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  
+  .full-screen-node-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  .full-screen-node-exit {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .full-screen-node-exit-active {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  /* Adjustments for better readability in full-screen mode */
+  .full-screen-node .message {
+    font-size: 16px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+  }
+  
+  .full-screen-node .message.user {
+    background-color: rgba(0, 150, 255, 0.2);
+  }
+  
+  .full-screen-node .message.ai {
+    background-color: rgba(0, 255, 150, 0.2);
+  }
+  
+  /* Improved scrollbar for full-screen mode */
+  .full-screen-node .chat-messages::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  .full-screen-node .chat-messages::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+  }
+  
+  .full-screen-node .chat-messages::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 150, 255, 0.5);
+    border-radius: 6px;
+    border: 3px solid rgba(0, 0, 0, 0.2);
+  }
+  
+  .full-screen-node .chat-messages::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 150, 255, 0.7);
+  }

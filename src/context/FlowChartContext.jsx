@@ -15,6 +15,7 @@ const initialState = {
   isLoading: true,
   dataLoaded: false,
   aiLoading: {},
+  fullScreenNodeId: null,
 };
 
 function flowChartReducer(state, action) {
@@ -113,6 +114,8 @@ function flowChartReducer(state, action) {
           ),
         },
       };
+    case 'SET_FULLSCREEN_NODE':
+      return { ...state, fullScreenNodeId: action.payload };
     default:
       return state;
   }
@@ -235,7 +238,7 @@ export function FlowChartProvider({ children }) {
       ];
       console.log('Contextualized messages:', contextualizedMessages);
       
-      const aiResponse = await openaiService.generateResponse(contextualizedMessages, 'gpt-4o-mini');
+      const aiResponse = await openaiService.generateResponse(contextualizedMessages);
       console.log('AI response received:', aiResponse);
       
       const aiMessage = { text: aiResponse, sender: 'ai' };
@@ -255,8 +258,12 @@ export function FlowChartProvider({ children }) {
     }
   }, [dispatch, getCombinedChatHistory]);
 
+  const setFullScreenNode = useCallback((nodeId) => {
+    dispatch({ type: 'SET_FULLSCREEN_NODE', payload: nodeId });
+  }, []);
+
   return (
-    <FlowChartContext.Provider value={{ state, dispatch, saveUserData, generateAIResponse, getCombinedChatHistory }}>
+    <FlowChartContext.Provider value={{ state, dispatch, saveUserData, generateAIResponse, getCombinedChatHistory, setFullScreenNode }}>
       {children}
     </FlowChartContext.Provider>
   );

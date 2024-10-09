@@ -8,6 +8,7 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import EditableNode from './EditableNode';
+import FullScreenNode from './FullScreenNode';
 import AnimatedBackground from '../AnimatedBackground/AnimatedBackground';
 import '@xyflow/react/dist/style.css';
 import './FlowChartStyles.css';
@@ -36,45 +37,10 @@ const customEdgeStyle = {
 };
 
 const FlowChart = () => {
-  const { state, dispatch, saveUserData } = useFlowChart();
+  const { state, dispatch, saveUserData, setFullScreenNode } = useFlowChart();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [nodeId, setNodeId] = useState(1);
-
-  const onDimensionsChange = useCallback((id, dimensions) => {
-    setNodes((nds) =>
-      nds.map((node) =>
-        node.id === id ? { ...node, style: { ...node.style, ...dimensions } } : node
-      )
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!state.isLoading && state.dataLoaded) {
-      const nodesWithFunction = state.nodes.map(node => ({
-        ...node,
-        data: {
-          ...node.data,
-          onDimensionsChange: (dimensions) => onDimensionsChange(node.id, dimensions)
-        }
-      }));
-      setNodes(nodesWithFunction);
-      setEdges(state.edges);
-      const maxId = Math.max(...state.nodes.map(node => parseInt(node.id)), 0);
-      setNodeId(maxId + 1);
-    }
-  }, [state.isLoading, state.dataLoaded, state.nodes, state.edges, onDimensionsChange]);
-
-  useEffect(() => {
-    const debouncedDispatch = setTimeout(() => {
-      dispatch({ type: 'SET_NODES', payload: nodes });
-    }, 300);
-    return () => clearTimeout(debouncedDispatch);
-  }, [nodes, dispatch]);
-
-  useEffect(() => {
-    dispatch({ type: 'SET_EDGES', payload: edges });
-  }, [edges, dispatch]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge({
@@ -90,6 +56,53 @@ const FlowChart = () => {
     []
   );
 
+  useEffect(() => {
+    if (!state.isLoading && state.dataLoaded) {
+      const nodesWithFunction = state.nodes.map(node => ({
+        ...node,
+        data: {
+          ...node.data,
+          onDimensionsChange: (dimensions) => onDimensionsChange(node.id, dimensions)
+        }
+      }));
+      setNodes(nodesWithFunction);
+      setEdges(state.edges);
+      const maxId = Math.max(...state.nodes.map(node => parseInt(node.id)), 0);
+      setNodeId(maxId + 1);
+    }
+  }, [state.isLoading, state.dataLoaded, state.nodes, state.edges]);
+
+  useEffect(() => {
+    const debouncedDispatch = setTimeout(() => {
+      dispatch({ type: 'SET_NODES', payload: nodes });
+    }, 300);
+    return () => clearTimeout(debouncedDispatch);
+  }, [nodes, dispatch]);
+
+  useEffect(() => {
+    dispatch({ type: 'SET_EDGES', payload: edges });
+  }, [edges, dispatch]);
+
+  useEffect(() => {
+    const handleFullScreenNode = (id) => {
+      setFullScreenNode(id);
+    };
+
+    dispatch({ type: 'SET_FULLSCREEN_HANDLER', payload: handleFullScreenNode });
+
+    return () => {
+      dispatch({ type: 'SET_FULLSCREEN_HANDLER', payload: null });
+    };
+  }, [dispatch, setFullScreenNode]);
+
+  const onDimensionsChange = useCallback((id, dimensions) => {
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === id ? { ...node, style: { ...node.style, ...dimensions } } : node
+      )
+    );
+  }, []);
+
   const addNode = useCallback(() => {
     const newNode = {
       id: `${nodeId}`,
@@ -102,7 +115,7 @@ const FlowChart = () => {
     };
     setNodes((nds) => [...nds, newNode]);
     setNodeId((nid) => nid + 1);
-  }, [nodeId, onDimensionsChange]);
+  }, [nodeId, onDimensionsChange, setNodes]);
 
   const handleSave = useCallback(() => {
     saveUserData();
@@ -111,6 +124,10 @@ const FlowChart = () => {
   const handleUndoDelete = useCallback(() => {
     dispatch({ type: 'UNDO_DELETE' });
   }, [dispatch]);
+
+  const closeFullScreen = useCallback(() => {
+    setFullScreenNode(null);
+  }, [setFullScreenNode]);
 
   const memoizedFlow = useMemo(() => (
     <ReactFlow
@@ -135,66 +152,72 @@ const FlowChart = () => {
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <AnimatedBackground />
       <CustomEdgeGradient />
-      {memoizedFlow}
-      <button
-        style={{
-          position: 'absolute',
-          right: 10,
-          top: 10,
-          zIndex: 4,
-          backgroundColor: 'rgba(0, 150, 255, 0.7)',
-          color: 'white',
-          border: 'none',
-          padding: '5px 10px',
-          borderRadius: '3px',
-          cursor: 'pointer',
-          fontSize: '12px',
-          fontWeight: 'bold',
-        }}
-        onClick={addNode}
-      >
-        Add Node
-      </button>
-      <button
-        style={{
-          position: 'absolute',
-          right: 10,
-          top: 50,
-          zIndex: 4,
-          backgroundColor: 'rgba(0, 255, 0, 0.7)',
-          color: 'white',
-          border: 'none',
-          padding: '5px 10px',
-          borderRadius: '3px',
-          cursor: 'pointer',
-          fontSize: '12px',
-          fontWeight: 'bold',
-        }}
-        onClick={handleSave}
-      >
-        Save
-      </button>
-      <button
-        style={{
-          position: 'absolute',
-          right: 10,
-          top: 90,
-          zIndex: 4,
-          backgroundColor: 'rgba(255, 165, 0, 0.7)',
-          color: 'white',
-          border: 'none',
-          padding: '5px 10px',
-          borderRadius: '3px',
-          cursor: 'pointer',
-          fontSize: '12px',
-          fontWeight: 'bold',
-        }}
-        onClick={handleUndoDelete}
-        disabled={state.deletedNodes.length === 0}
-      >
-        Undo Delete
-      </button>
-      <SignOutButton />
+      {state.fullScreenNodeId ? (
+        <FullScreenNode nodeId={state.fullScreenNodeId} onClose={closeFullScreen} />
+      ) : (
+        <>
+          {memoizedFlow}
+          <button
+            style={{
+              position: 'absolute',
+              right: 10,
+              top: 10,
+              zIndex: 4,
+              backgroundColor: 'rgba(0, 150, 255, 0.7)',
+              color: 'white',
+              border: 'none',
+              padding: '5px 10px',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            }}
+            onClick={addNode}
+          >
+            Add Node
+          </button>
+          <button
+            style={{
+              position: 'absolute',
+              right: 10,
+              top: 50,
+              zIndex: 4,
+              backgroundColor: 'rgba(0, 255, 0, 0.7)',
+              color: 'white',
+              border: 'none',
+              padding: '5px 10px',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            }}
+            onClick={handleSave}
+          >
+            Save
+          </button>
+          <button
+            style={{
+              position: 'absolute',
+              right: 10,
+              top: 90,
+              zIndex: 4,
+              backgroundColor: 'rgba(255, 165, 0, 0.7)',
+              color: 'white',
+              border: 'none',
+              padding: '5px 10px',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            }}
+            onClick={handleUndoDelete}
+            disabled={state.deletedNodes.length === 0}
+          >
+            Undo Delete
+          </button>
+          <SignOutButton />
+        </>
+      )}
     </div>
   );
 }

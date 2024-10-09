@@ -4,7 +4,7 @@ import ChatInterface from '../ChatInterface/ChatInterface';
 import { useFlowChart } from '../../context/FlowChartContext';
 
 const EditableNode = React.memo(({ data, id, selected }) => {
-  const { state, dispatch } = useFlowChart();
+  const { dispatch, setFullScreenNode } = useFlowChart();
   const [title, setTitle] = useState(data.label);
   const [showChat, setShowChat] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 280, height: 150 });
@@ -27,14 +27,14 @@ const EditableNode = React.memo(({ data, id, selected }) => {
     dispatch({ type: 'DELETE_NODE', payload: { id } });
   }, [dispatch, id]);
 
+  const handleFullScreen = useCallback(() => {
+    setFullScreenNode(id);
+  }, [setFullScreenNode, id]);
+
   const isTooSmallForChat = dimensions.width < 200 || dimensions.height < 150;
 
   const leftHandleStyle = useMemo(() => ({ left: -8, top: dimensions.height / 2 }), [dimensions.height]);
   const rightHandleStyle = useMemo(() => ({ right: -8, top: dimensions.height / 2 }), [dimensions.height]);
-
-  const chatInterface = useMemo(() => (
-    <ChatInterface nodeId={id} />
-  ), [id]);
 
   return (
     <>
@@ -63,7 +63,13 @@ const EditableNode = React.memo(({ data, id, selected }) => {
               >
                 {showChat ? 'Hide Chat' : 'Show Chat'}
               </button>
-              {showChat && chatInterface}
+              <button
+                className="full-screen-btn nodrag"
+                onClick={handleFullScreen}
+              >
+                Full Screen
+              </button>
+              {showChat && <ChatInterface nodeId={id} />}
             </>
           )}
           <button
