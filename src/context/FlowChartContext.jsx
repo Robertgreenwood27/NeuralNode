@@ -235,7 +235,7 @@ export function FlowChartProvider({ children }) {
       ];
       console.log('Contextualized messages:', contextualizedMessages);
       
-      const aiResponse = await openaiService.generateResponse(contextualizedMessages);
+      const aiResponse = await openaiService.generateResponse(contextualizedMessages, 'gpt-4o-mini');
       console.log('AI response received:', aiResponse);
       
       const aiMessage = { text: aiResponse, sender: 'ai' };

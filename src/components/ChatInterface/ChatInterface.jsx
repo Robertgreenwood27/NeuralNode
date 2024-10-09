@@ -80,6 +80,37 @@ const ChatInterface = React.memo(({ nodeId }) => {
     e.stopPropagation();
   }, []);
 
+  const renderMessage = useCallback((msg) => {
+    if (editingMessage && editingMessage.id === msg.id) {
+      return (
+        <div className="edit-message-container">
+          <textarea
+            ref={editInputRef}
+            value={editingMessage.text}
+            onChange={handleEditChange}
+            onKeyDown={handleKeyDown}
+            onBlur={saveEdit}
+            autoFocus
+          />
+          <div className="edit-buttons">
+            <button onClick={saveEdit}>Save</button>
+            <button onClick={cancelEdit}>Cancel</button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        onDoubleClick={() => startEditing(msg)}
+        style={{ userSelect: 'text', cursor: 'text' }}
+      >
+        <strong>{msg.sender}:</strong>
+        <div dangerouslySetInnerHTML={{ __html: msg.text.replace(/\n/g, '<br>') }} />
+      </div>
+    );
+  }, [editingMessage, handleEditChange, handleKeyDown, saveEdit, cancelEdit, startEditing]);
+
   return (
     <div
       className="chat-interface nodrag"
@@ -91,7 +122,7 @@ const ChatInterface = React.memo(({ nodeId }) => {
         className="chat-messages"
         style={{
           overflowY: 'auto',
-          maxHeight: '200px',
+          maxHeight: '400px', // Increased max height
           padding: '10px',
           marginBottom: '10px'
         }}
@@ -101,40 +132,19 @@ const ChatInterface = React.memo(({ nodeId }) => {
         ) : (
           messages.map((msg) => (
             <div key={msg.id} className={`message ${msg.sender}`}>
-              {editingMessage && editingMessage.id === msg.id ? (
-                <div className="edit-message-container">
-                  <textarea
-                    ref={editInputRef}
-                    value={editingMessage.text}
-                    onChange={handleEditChange}
-                    onKeyDown={handleKeyDown}
-                    onBlur={saveEdit}
-                    autoFocus
-                  />
-                  <div className="edit-buttons">
-                    <button onClick={saveEdit}>Save</button>
-                    <button onClick={cancelEdit}>Cancel</button>
-                  </div>
-                </div>
-              ) : (
-                <div
-                  onDoubleClick={() => startEditing(msg)}
-                  style={{ userSelect: 'text', cursor: 'text' }}
-                >
-                  <strong>{msg.sender}:</strong> {msg.text}
-                </div>
-              )}
+              {renderMessage(msg)}
             </div>
           ))
         )}
         {state.aiLoading[nodeId] && <div className="message ai">AI is thinking...</div>}
       </div>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
+        <textarea
           value={input}
           onChange={handleInputChange}
           placeholder="Type a message..."
+          rows="3" // Increased number of rows
+          style={{ width: '100%', resize: 'vertical' }}
         />
         <button type="submit">Send</button>
       </form>
