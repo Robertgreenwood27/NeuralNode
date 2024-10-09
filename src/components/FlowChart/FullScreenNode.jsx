@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useFlowChart } from '../../context/FlowChartContext';
 import ChatInterface from '../ChatInterface/ChatInterface';
+import { X } from 'lucide-react';
 
 const FullScreenNode = ({ nodeId, onClose }) => {
   const { state, dispatch } = useFlowChart();
@@ -16,11 +17,16 @@ const FullScreenNode = ({ nodeId, onClose }) => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsKeyboardVisible(window.visualViewport.height < window.innerHeight);
+      const isKeyboard = window.visualViewport.height < window.innerHeight;
+      setIsKeyboardVisible(isKeyboard);
+      document.body.style.height = `${window.visualViewport.height}px`;
     };
 
     window.visualViewport.addEventListener('resize', handleResize);
-    return () => window.visualViewport.removeEventListener('resize', handleResize);
+    return () => {
+      window.visualViewport.removeEventListener('resize', handleResize);
+      document.body.style.height = '';
+    };
   }, []);
 
   return (
@@ -32,8 +38,8 @@ const FullScreenNode = ({ nodeId, onClose }) => {
           className="full-screen-title"
           placeholder="Node Title"
         />
-        <button className="close-full-screen" onClick={onClose}>
-          Close
+        <button className="close-full-screen" onClick={onClose} aria-label="Close">
+          <X size={24} />
         </button>
       </div>
       <div className="full-screen-content">

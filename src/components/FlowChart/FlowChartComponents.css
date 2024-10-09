@@ -431,3 +431,121 @@
       height: 20px;
     }
   }
+
+  /* Full screen styles */
+.full-screen-node {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    animation: fadeIn 0.3s ease-in-out;
+    overflow: hidden;
+  }
+  
+  .full-screen-node.keyboard-visible {
+    height: 100%; /* This will now be set dynamically in JS */
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .full-screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .full-screen-title {
+    font-size: 16px;
+    color: #e0e0e0;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(0, 150, 255, 0.3);
+    padding: 5px 0;
+    width: calc(100% - 40px);
+    max-width: 200px;
+  }
+  
+  .close-full-screen {
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    cursor: pointer;
+    padding: 5px;
+  }
+  
+  .full-screen-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .chat-interface.full-screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chat-interface.full-screen .chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+  }
+  
+  .chat-interface.full-screen form {
+    position: sticky;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-top: 1px solid rgba(0, 150, 255, 0.3);
+  }
+  
+  .chat-interface.full-screen textarea {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    resize: none;
+    box-sizing: border-box;
+  }
+  
+  .chat-interface.full-screen button {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 20px;
+  }
+  
+  /* Mobile-specific styles */
+  @media (max-width: 768px) {
+    .full-screen-header {
+      padding: 5px;
+    }
+  
+    .full-screen-title {
+      font-size: 14px;
+    }
+  
+    .chat-interface.full-screen textarea,
+    .chat-interface.full-screen button {
+      font-size: 14px;
+      padding: 8px;
+    }
+  }
+  
+  /* Ensure content doesn't overflow horizontally */
+  .full-screen-node * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
