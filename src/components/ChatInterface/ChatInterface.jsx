@@ -4,6 +4,7 @@ import { useFlowChart } from '../../context/FlowChartContext';
 const ChatInterface = React.memo(({ nodeId, fullScreen = false }) => {
   const [input, setInput] = useState('');
   const [editingMessage, setEditingMessage] = useState(null);
+  const [longPressTimer, setLongPressTimer] = useState(null);
   const chatContainerRef = useRef(null);
   const editInputRef = useRef(null);
   const { state, dispatch, generateAIResponse } = useFlowChart();
@@ -76,6 +77,19 @@ const ChatInterface = React.memo(({ nodeId, fullScreen = false }) => {
     }
   }, [saveEdit, cancelEdit]);
 
+  const handleMessageTouchStart = useCallback((message) => {
+    const timer = setTimeout(() => {
+      startEditing(message);
+    }, 500); // 500ms long press to start editing
+    setLongPressTimer(timer);
+  }, [startEditing]);
+
+  const handleMessageTouchEnd = useCallback(() => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+    }
+  }, [longPressTimer]);
+
   const preventPropagation = useCallback((e) => {
     e.stopPropagation();
   }, []);
@@ -103,13 +117,15 @@ const ChatInterface = React.memo(({ nodeId, fullScreen = false }) => {
     return (
       <div
         onDoubleClick={() => startEditing(msg)}
-        style={{ userSelect: 'text', cursor: 'text' }}
+        onTouchStart={() => handleMessageTouchStart(msg)}
+        onTouchEnd={handleMessageTouchEnd}
+        className="message-content"
       >
         <strong>{msg.sender}:</strong>
         <div dangerouslySetInnerHTML={{ __html: msg.text.replace(/\n/g, '<br>') }} />
       </div>
     );
-  }, [editingMessage, handleEditChange, handleKeyDown, saveEdit, cancelEdit, startEditing]);
+  }, [editingMessage, handleEditChange, handleKeyDown, saveEdit, cancelEdit, startEditing, handleMessageTouchStart, handleMessageTouchEnd]);
 
   return (
     <div
