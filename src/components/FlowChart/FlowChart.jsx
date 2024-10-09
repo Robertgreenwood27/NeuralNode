@@ -123,6 +123,7 @@ const FlowChart = () => {
         label: `Node ${nodeId}`,
         onDimensionsChange: (dimensions) => onDimensionsChange(`${nodeId}`, dimensions),
       },
+      style: { width: 180, height: 100 }, // Updated dimensions
     };
     setNodes((nds) => [...nds, newNode]);
     setNodeId((nid) => nid + 1);

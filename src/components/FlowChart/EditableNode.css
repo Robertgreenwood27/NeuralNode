@@ -1,0 +1,78 @@
+.editable-node {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    padding: 8px;
+    color: #e0e0e0;
+    box-shadow: 0 0 10px rgba(0, 150, 255, 0.2);
+    border: 1px solid rgba(0, 150, 255, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+    backdrop-filter: blur(3px);
+  }
+  
+  .editable-node:hover {
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.3);
+  }
+  
+  .node-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+  
+  .node-title {
+    background-color: transparent;
+    border: none;
+    color: #e0e0e0;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 0;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .node-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+  
+  .node-btn {
+    background-color: transparent;
+    border: none;
+    color: #a0a0a0;
+    cursor: pointer;
+    padding: 2px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .node-btn:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+  
+  .delete-node-btn:hover {
+    color: #ff4444;
+  }
+  
+  .react-flow__handle {
+    width: 6px;
+    height: 6px;
+    background-color: rgba(0, 150, 255, 0.75);
+  }
+  
+  .react-flow__handle:hover {
+    background-color: rgba(255, 50, 50, 0.75);
+  }

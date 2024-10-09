@@ -3,7 +3,8 @@ import { auth } from './services/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import FlowChart from './components/FlowChart/FlowChart';
 import Auth from './components/Auth/Auth';
-import './components/FlowChart/FlowChartStyles.css';
+import './components/FlowChart/FlowChartBass.css';
+import './components/FlowChart/FlowChartComponents.css';
 import { FlowChartProvider } from './context/FlowChartContext';
 
 function App() {
