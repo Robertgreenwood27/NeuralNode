@@ -558,3 +558,147 @@
   .full-screen-node .chat-messages::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 150, 255, 0.7);
   }
+
+
+  /* ... (previous styles remain the same) */
+
+.full-screen-node {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box;
+    animation: fadeIn 0.3s ease-in-out;
+    overflow: hidden;
+  }
+  
+  .full-screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .full-screen-title {
+    font-size: 18px;
+    color: #e0e0e0;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(0, 150, 255, 0.3);
+    padding: 5px 0;
+    width: 70%;
+    max-width: 250px;
+  }
+  
+  .close-full-screen {
+    background-color: rgba(255, 50, 50, 0.7);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .full-screen-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .chat-interface.full-screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chat-interface.full-screen .chat-messages {
+    max-height: calc(100vh - 180px);
+    flex-grow: 1;
+  }
+  
+  .chat-interface.full-screen form {
+    position: sticky;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-top: 1px solid rgba(0, 150, 255, 0.3);
+  }
+  
+  .chat-interface.full-screen textarea {
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    resize: none;
+  }
+  
+  .chat-interface.full-screen button {
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    width: 100%;
+  }
+  
+  /* Mobile-specific styles */
+  @media (max-width: 768px) {
+    .full-screen-node {
+      padding: 5px;
+    }
+  
+    .full-screen-header {
+      margin-bottom: 5px;
+    }
+  
+    .full-screen-title {
+      font-size: 16px;
+      max-width: 200px;
+    }
+  
+    .close-full-screen {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+  
+    .chat-interface.full-screen .chat-messages {
+      max-height: calc(100vh - 160px);
+    }
+  
+    .chat-interface.full-screen textarea {
+      font-size: 14px;
+      padding: 8px;
+    }
+  
+    .chat-interface.full-screen button {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+  }
+  
+  /* Adjust layout when keyboard is visible */
+  .full-screen-node.keyboard-visible .chat-interface.full-screen .chat-messages {
+    max-height: calc(100vh - 260px);
+  }
+  
+  /* Improve touch targets */
+  .message {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+  }
+  
+  .edit-buttons button {
+    padding: 8px 12px;
+    margin: 0 5px;
+  }
+  
+  /* Smooth scrolling for iOS */
+  .chat-messages {
+    -webkit-overflow-scrolling: touch;
+  }
