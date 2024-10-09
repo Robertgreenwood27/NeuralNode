@@ -14,7 +14,7 @@ import '@xyflow/react/dist/style.css';
 import './FlowChart.css';
 import SignOutButton from '../Auth/SignOutButton';
 import { useFlowChart } from '../../context/FlowChartContext';
-import { ArrowUpCircle, Save, PlusCircle } from 'lucide-react';
+import { ArrowUpCircle, Save, PlusCircle, Undo } from 'lucide-react';
 
 const nodeTypes = {
   editable: EditableNode,
@@ -42,7 +42,7 @@ const FlowChart = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [nodeId, setNodeId] = useState(1);
-  const [showFAB, setShowFAB] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge({
@@ -99,8 +99,7 @@ const FlowChart = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      setShowFAB(scrollY > 200);
+      setShowScrollToTop(window.pageYOffset > 200);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -123,7 +122,7 @@ const FlowChart = () => {
         label: `Node ${nodeId}`,
         onDimensionsChange: (dimensions) => onDimensionsChange(`${nodeId}`, dimensions),
       },
-      style: { width: 180, height: 100 }, // Updated dimensions
+      style: { width: 180, height: 100 },
     };
     setNodes((nds) => [...nds, newNode]);
     setNodeId((nid) => nid + 1);
@@ -136,10 +135,6 @@ const FlowChart = () => {
   const handleUndoDelete = useCallback(() => {
     dispatch({ type: 'UNDO_DELETE' });
   }, [dispatch]);
-
-  const closeFullScreen = useCallback(() => {
-    setFullScreenNode(null);
-  }, [setFullScreenNode]);
 
   const handleScrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -169,36 +164,32 @@ const FlowChart = () => {
       <AnimatedBackground />
       <CustomEdgeGradient />
       {state.fullScreenNodeId ? (
-        <FullScreenNode nodeId={state.fullScreenNodeId} onClose={closeFullScreen} />
+        <FullScreenNode nodeId={state.fullScreenNodeId} onClose={() => setFullScreenNode(null)} />
       ) : (
         <>
           {memoizedFlow}
-          <button className="action-button add-node" onClick={addNode}>
-            <PlusCircle size={16} />
-            Add Node
-          </button>
-          <button className="action-button save" onClick={handleSave}>
-            <Save size={16} />
-            Save
-          </button>
-          <button 
-            className="action-button undo-delete" 
-            onClick={handleUndoDelete}
-            disabled={state.deletedNodes.length === 0}
-          >
-            Undo Delete
-          </button>
-          {showFAB && (
-            <div className="fab-container">
-              <button className="fab" onClick={handleSave} aria-label="Save">
-                <Save size={24} />
-              </button>
+          <SignOutButton />
+          <div className="fab-container">
+            <button className="fab" onClick={addNode} aria-label="Add Node">
+              <PlusCircle size={24} />
+            </button>
+            <button className="fab" onClick={handleSave} aria-label="Save">
+              <Save size={24} />
+            </button>
+            <button 
+              className="fab" 
+              onClick={handleUndoDelete}
+              disabled={state.deletedNodes.length === 0}
+              aria-label="Undo Delete"
+            >
+              <Undo size={24} />
+            </button>
+            {showScrollToTop && (
               <button className="fab" onClick={handleScrollToTop} aria-label="Scroll to top">
                 <ArrowUpCircle size={24} />
               </button>
-            </div>
-          )}
-          <SignOutButton />
+            )}
+          </div>
         </>
       )}
     </div>

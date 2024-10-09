@@ -448,3 +448,84 @@ body {
       padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
   }
+
+  /* ... (keep existing styles) ... */
+
+/* Floating Action Button (FAB) styles */
+.fab-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(0, 150, 255, 0.7);
+  color: white;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.fab:hover {
+  background-color: rgba(0, 150, 255, 0.9);
+  transform: scale(1.1);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Ensure FAB is visible on smaller screens */
+@media (max-width: 768px) {
+  .fab-container {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .fab {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Additional styles for better mobile experience */
+@media (max-width: 480px) {
+  .fab {
+    width: 40px;
+    height: 40px;
+  }
+
+  .fab svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Focus styles for better keyboard navigation */
+.fab:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Transition for smooth color changes */
+.fab {
+  transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+}
