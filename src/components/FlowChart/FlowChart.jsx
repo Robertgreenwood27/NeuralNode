@@ -11,9 +11,10 @@ import EditableNode from './EditableNode';
 import FullScreenNode from './FullScreenNode';
 import AnimatedBackground from '../AnimatedBackground/AnimatedBackground';
 import '@xyflow/react/dist/style.css';
-import './FlowChartStyles.css';
+import './FlowChart.css';
 import SignOutButton from '../Auth/SignOutButton';
 import { useFlowChart } from '../../context/FlowChartContext';
+import { ArrowUpCircle, Save, PlusCircle } from 'lucide-react';
 
 const nodeTypes = {
   editable: EditableNode,
@@ -41,6 +42,7 @@ const FlowChart = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [nodeId, setNodeId] = useState(1);
+  const [showFAB, setShowFAB] = useState(false);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge({
@@ -95,6 +97,15 @@ const FlowChart = () => {
     };
   }, [dispatch, setFullScreenNode]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      setShowFAB(scrollY > 200);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const onDimensionsChange = useCallback((id, dimensions) => {
     setNodes((nds) =>
       nds.map((node) =>
@@ -129,6 +140,10 @@ const FlowChart = () => {
     setFullScreenNode(null);
   }, [setFullScreenNode]);
 
+  const handleScrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const memoizedFlow = useMemo(() => (
     <ReactFlow
       nodes={nodes}
@@ -149,7 +164,7 @@ const FlowChart = () => {
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+    <div className="flowchart-container">
       <AnimatedBackground />
       <CustomEdgeGradient />
       {state.fullScreenNodeId ? (
@@ -157,64 +172,31 @@ const FlowChart = () => {
       ) : (
         <>
           {memoizedFlow}
-          <button
-            style={{
-              position: 'absolute',
-              right: 10,
-              top: 10,
-              zIndex: 4,
-              backgroundColor: 'rgba(0, 150, 255, 0.7)',
-              color: 'white',
-              border: 'none',
-              padding: '5px 10px',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
-            onClick={addNode}
-          >
+          <button className="action-button add-node" onClick={addNode}>
+            <PlusCircle size={16} />
             Add Node
           </button>
-          <button
-            style={{
-              position: 'absolute',
-              right: 10,
-              top: 50,
-              zIndex: 4,
-              backgroundColor: 'rgba(0, 255, 0, 0.7)',
-              color: 'white',
-              border: 'none',
-              padding: '5px 10px',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
-            onClick={handleSave}
-          >
+          <button className="action-button save" onClick={handleSave}>
+            <Save size={16} />
             Save
           </button>
-          <button
-            style={{
-              position: 'absolute',
-              right: 10,
-              top: 90,
-              zIndex: 4,
-              backgroundColor: 'rgba(255, 165, 0, 0.7)',
-              color: 'white',
-              border: 'none',
-              padding: '5px 10px',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
+          <button 
+            className="action-button undo-delete" 
             onClick={handleUndoDelete}
             disabled={state.deletedNodes.length === 0}
           >
             Undo Delete
           </button>
+          {showFAB && (
+            <div className="fab-container">
+              <button className="fab" onClick={handleSave} aria-label="Save">
+                <Save size={24} />
+              </button>
+              <button className="fab" onClick={handleScrollToTop} aria-label="Scroll to top">
+                <ArrowUpCircle size={24} />
+              </button>
+            </div>
+          )}
           <SignOutButton />
         </>
       )}
