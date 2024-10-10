@@ -10,6 +10,7 @@ import {
 import EditableNode from './EditableNode';
 import FullScreenNode from './FullScreenNode';
 import AnimatedBackground from '../AnimatedBackground/AnimatedBackground';
+import BottomNav from './BottomNav';
 import '@xyflow/react/dist/style.css';
 import './FlowChart.css';
 import SignOutButton from '../Auth/SignOutButton';
@@ -43,6 +44,7 @@ const FlowChart = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [nodeId, setNodeId] = useState(1);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge({
@@ -103,6 +105,15 @@ const FlowChart = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const onDimensionsChange = useCallback((id, dimensions) => {
@@ -169,27 +180,38 @@ const FlowChart = () => {
         <>
           {memoizedFlow}
           <SignOutButton />
-          <div className="fab-container">
-            <button className="fab" onClick={addNode} aria-label="Add Node">
-              <PlusCircle size={24} />
-            </button>
-            <button className="fab" onClick={handleSave} aria-label="Save">
-              <Save size={24} />
-            </button>
-            <button 
-              className="fab" 
-              onClick={handleUndoDelete}
-              disabled={state.deletedNodes.length === 0}
-              aria-label="Undo Delete"
-            >
-              <Undo size={24} />
-            </button>
-            {showScrollToTop && (
-              <button className="fab" onClick={handleScrollToTop} aria-label="Scroll to top">
-                <ArrowUpCircle size={24} />
+          {isMobile ? (
+            <BottomNav
+              onAddNode={addNode}
+              onSave={handleSave}
+              onUndoDelete={handleUndoDelete}
+              onScrollToTop={handleScrollToTop}
+              canUndo={state.deletedNodes.length > 0}
+              showScrollToTop={showScrollToTop}
+            />
+          ) : (
+            <div className="fab-container">
+              <button className="fab" onClick={addNode} aria-label="Add Node">
+                <PlusCircle size={24} />
               </button>
-            )}
-          </div>
+              <button className="fab" onClick={handleSave} aria-label="Save">
+                <Save size={24} />
+              </button>
+              <button 
+                className="fab" 
+                onClick={handleUndoDelete}
+                disabled={state.deletedNodes.length === 0}
+                aria-label="Undo Delete"
+              >
+                <Undo size={24} />
+              </button>
+              {showScrollToTop && (
+                <button className="fab" onClick={handleScrollToTop} aria-label="Scroll to top">
+                  <ArrowUpCircle size={24} />
+                </button>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>

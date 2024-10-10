@@ -493,24 +493,40 @@ body {
   cursor: not-allowed;
 }
 
-/* Ensure FAB is visible on smaller screens */
+.fab svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Ensure FAB is visible and properly sized on smaller screens */
 @media (max-width: 768px) {
   .fab-container {
-    bottom: 10px;
-    right: 10px;
+    bottom: 15px;
+    right: 15px;
   }
 
   .fab {
     width: 48px;
     height: 48px;
   }
+
+  .fab svg {
+    width: 22px;
+    height: 22px;
+  }
 }
 
-/* Additional styles for better mobile experience */
+/* Further adjustments for very small screens */
 @media (max-width: 480px) {
+  .fab-container {
+    bottom: 10px;
+    right: 10px;
+  }
+
   .fab {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    margin-top: 8px;
   }
 
   .fab svg {
@@ -528,4 +544,55 @@ body {
 /* Transition for smooth color changes */
 .fab {
   transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+}
+
+
+/* Bottom Navigation styles */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  z-index: 1000;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  transition: background-color 0.3s;
+}
+
+.bottom-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bottom-nav-item span {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.bottom-nav-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .flowchart-container {
+    padding-bottom: 60px; /* Adjust based on the height of your bottom nav */
+  }
+
+  .fab-container {
+    display: none; /* Hide FABs on mobile */
+  }
 }
