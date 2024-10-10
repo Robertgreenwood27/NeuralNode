@@ -1,0 +1,120 @@
+/* Full screen styles */
+.full-screen-node {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #1a1a1a;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  
+  .full-screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .full-screen-title,
+  .full-screen-title-input {
+    font-size: 18px;
+    color: #ffffff;
+    background-color: transparent;
+    border: none;
+    padding: 5px 0;
+    margin: 0;
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .full-screen-title-input {
+    border-bottom: 2px solid #4a90e2;
+  }
+  
+  .back-button,
+  .close-full-screen {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+  }
+  
+  .back-button:hover,
+  .close-full-screen:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .full-screen-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .chat-interface.full-screen {
+    height: 100%;
+    padding: 16px;
+  }
+  
+  .chat-interface.full-screen .chat-messages {
+    padding: 10px 0;
+    margin-bottom: 16px;
+  }
+  
+  .chat-interface.full-screen form {
+    position: sticky;
+    bottom: 0;
+    background-color: #1a1a1a;
+    padding: 16px 0;
+    border-top: 1px solid #3a3a3a;
+  }
+  
+  .chat-interface.full-screen textarea {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 24px;
+    resize: none;
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #3a3a3a;
+  }
+  
+  .chat-interface.full-screen button {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 24px;
+    background-color: #4a90e2;
+    color: #ffffff;
+    border: none;
+  }
+  
+  /* Ensure content doesn't overflow horizontally */
+  .full-screen-node * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Safe area insets for notched devices */
+  @supports (padding: max(0px)) {
+    .full-screen-node {
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+  }

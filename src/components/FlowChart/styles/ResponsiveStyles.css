@@ -1,0 +1,68 @@
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+    .full-screen-header,
+    .chat-interface.full-screen {
+      padding: 12px;
+    }
+  
+    .full-screen-title,
+    .full-screen-title-input,
+    .chat-interface.full-screen textarea,
+    .chat-interface.full-screen button {
+      font-size: 16px;
+    }
+  
+    .chat-interface.full-screen textarea,
+    .chat-interface.full-screen button {
+      padding: 10px;
+    }
+  
+    .chat-interface.full-screen .chat-messages {
+      margin-bottom: 12px;
+    }
+  
+    .back-button,
+    .close-full-screen {
+      padding: 12px;
+    }
+  
+    .chat-interface.full-screen .message {
+      font-size: 16px;
+      line-height: 1.5;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 16px;
+    }
+  
+    .message-content:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  
+    .action-button {
+      font-size: 10px;
+      padding: 4px 8px;
+    }
+  }
+  
+  /* Adjustments for smaller screens */
+  @media (max-width: 320px) {
+    .full-screen-header {
+      padding: 8px;
+    }
+  
+    .full-screen-title,
+    .full-screen-title-input,
+    .chat-interface.full-screen textarea,
+    .chat-interface.full-screen button {
+      font-size: 14px;
+    }
+  
+    .chat-interface.full-screen {
+      padding: 8px;
+    }
+  
+    .chat-interface.full-screen textarea,
+    .chat-interface.full-screen button {
+      padding: 8px;
+    }
+  }

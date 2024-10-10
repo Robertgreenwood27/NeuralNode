@@ -1,0 +1,83 @@
+/* Floating Action Button (FAB) styles */
+.fab-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 1000;
+  }
+  
+  .fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: rgba(0, 150, 255, 0.7);
+    color: white;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    transition: background-color 0.3s, transform 0.3s, opacity 0.3s;
+  }
+  
+  .fab:hover {
+    background-color: rgba(0, 150, 255, 0.9);
+    transform: scale(1.1);
+  }
+  
+  .fab:active {
+    transform: scale(0.95);
+  }
+  
+  .fab:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .fab svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Ensure FAB is visible and properly sized on smaller screens */
+  @media (max-width: 768px) {
+    .fab-container {
+      bottom: 15px;
+      right: 15px;
+    }
+  
+    .fab {
+      width: 48px;
+      height: 48px;
+    }
+  
+    .fab svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+  
+  /* Further adjustments for very small screens */
+  @media (max-width: 480px) {
+    .fab-container {
+      bottom: 10px;
+      right: 10px;
+    }
+  
+    .fab {
+      width: 44px;
+      height: 44px;
+      margin-top: 8px;
+    }
+  
+    .fab svg {
+      width: 20px;
+      height: 20px;
+    }
+  }

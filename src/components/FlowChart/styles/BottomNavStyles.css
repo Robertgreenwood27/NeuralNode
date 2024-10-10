@@ -1,0 +1,49 @@
+/* Bottom Navigation styles */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 1000;
+  }
+  
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .bottom-nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .bottom-nav-item span {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  
+  .bottom-nav-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Media query for mobile devices */
+  @media (max-width: 768px) {
+    .flowchart-container {
+      padding-bottom: 60px; /* Adjust based on the height of your bottom nav */
+    }
+  
+    .fab-container {
+      display: none; /* Hide FABs on mobile */
+    }
+  }

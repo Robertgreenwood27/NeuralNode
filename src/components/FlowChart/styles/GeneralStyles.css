@@ -1,0 +1,24 @@
+/* General styles */
+body {
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  /* Button styles */
+  .action-button,
+  .fab,
+  .chat-interface button,
+  .edit-buttons button {
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Focus styles for better keyboard navigation */
+  .action-button:focus,
+  .fab:focus,
+  .chat-interface button:focus,
+  .edit-buttons button:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
