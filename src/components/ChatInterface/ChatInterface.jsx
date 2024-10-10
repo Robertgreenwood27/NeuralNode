@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useFlowChart } from '../../context/FlowChartContext';
+import { useFlowChart } from '../../context/useFlowChart';
 
 const ChatInterface = React.memo(({ nodeId, fullScreen = false }) => {
   const [input, setInput] = useState('');
@@ -122,17 +122,15 @@ const ChatInterface = React.memo(({ nodeId, fullScreen = false }) => {
         className="message-content"
       >
         <strong>{msg.sender}:</strong>
-        <div dangerouslySetInnerHTML={{ __html: msg.text.replace(/\n/g, '<br>') }} />
+        <div 
+          dangerouslySetInnerHTML={{ __html: typeof msg.text === 'string' ? msg.text.replace(/\n/g, '<br>') : msg.text }}
+        />
       </div>
     );
   }, [editingMessage, handleEditChange, handleKeyDown, saveEdit, cancelEdit, startEditing, handleMessageTouchStart, handleMessageTouchEnd]);
 
   return (
-    <div
-      className={`chat-interface nodrag ${fullScreen ? 'full-screen' : ''}`}
-      onMouseDown={preventPropagation}
-      onClick={preventPropagation}
-    >
+    <div className={`chat-interface nodrag ${fullScreen ? 'full-screen' : ''}`}>
       <div
         ref={chatContainerRef}
         className="chat-messages"

@@ -6,10 +6,10 @@ const openai = new OpenAI({
 });
 
 const openaiService = {
-  generateResponse: async (messages, model = 'gpt-4o-mini') => {
+  generateResponse: async function* (messages, model = 'gpt-4o-mini') {
     try {
       console.log(`Sending request to OpenAI API with messages using model: ${model}`);
-      const response = await openai.chat.completions.create({
+      const stream = await openai.chat.completions.create({
         model: model,
         messages: [
           { role: "system", content: "You are a helpful assistant in a flowchart node. Provide detailed and comprehensive responses." },
@@ -18,10 +18,12 @@ const openaiService = {
             content: msg.text
           }))
         ],
-        max_tokens: 16384, // Increased to allow for longer responses
+        stream: true,
       });
-      console.log('Received response from OpenAI API:', response);
-      return response.choices[0].message.content;
+
+      for await (const part of stream) {
+        yield part.choices[0]?.delta?.content || '';
+      }
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
       if (error.response) {

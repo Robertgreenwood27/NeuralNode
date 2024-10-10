@@ -14,7 +14,7 @@ import BottomNav from './BottomNav';
 import '@xyflow/react/dist/style.css';
 import './FlowChart.css';
 import SignOutButton from '../Auth/SignOutButton';
-import { useFlowChart } from '../../context/FlowChartContext';
+import { useFlowChart } from '../../context/useFlowChart';
 import { ArrowUpCircle, Save, PlusCircle, Undo } from 'lucide-react';
 
 const nodeTypes = {
@@ -162,7 +162,6 @@ const FlowChart = () => {
       fitView
       style={{ background: 'transparent' }}
     >
-      <Controls />
     </ReactFlow>
   ), [nodes, edges, onNodesChange, onEdgesChange, onConnect]);
 

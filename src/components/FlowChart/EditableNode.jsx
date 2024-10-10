@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { useFlowChart } from '../../context/FlowChartContext';
+import { useFlowChart } from '../../context/useFlowChart';
 import { Maximize2, Trash2 } from 'lucide-react';
 
 const EditableNode = ({ data, id }) => {

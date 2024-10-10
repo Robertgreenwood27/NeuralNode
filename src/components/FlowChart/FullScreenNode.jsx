@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { useFlowChart } from '../../context/FlowChartContext';
+import { useFlowChart } from '../../context/useFlowChart';
 import ChatInterface from '../ChatInterface/ChatInterface';
 import { X, ChevronLeft } from 'lucide-react';
 

@@ -596,3 +596,13 @@ body {
     display: none; /* Hide FABs on mobile */
   }
 }
+
+.message-content.ai .typing {
+  animation: typing 0.5s steps(1, end) infinite;
+}
+
+@keyframes typing {
+  0% { border-right: 2px solid transparent; }
+  50% { border-right: 2px solid #e0e0e0; }
+  100% { border-right: 2px solid transparent; }
+}

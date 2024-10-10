@@ -5,7 +5,7 @@ import FlowChart from './components/FlowChart/FlowChart';
 import Auth from './components/Auth/Auth';
 import './components/FlowChart/FlowChartBase.css';
 import './components/FlowChart/FlowChartComponents.css';
-import { FlowChartProvider } from './context/FlowChartContext';
+import { FlowChartProvider } from './context/FlowChartProvider'; // Update this line
 
 function App() {
   const [user, setUser] = useState(null);
