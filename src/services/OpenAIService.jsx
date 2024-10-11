@@ -12,7 +12,7 @@ const openaiService = {
       const stream = await openai.chat.completions.create({
         model: model,
         messages: [
-          { role: "system", content: "You are a helpful assistant in a flowchart node. Provide detailed and comprehensive responses." },
+          { role: "system", content: "You are an AI assistant integrated into a node-based conversation system. Each node represents a distinct point in a conversation or thought process. Users can create multiple interconnected nodes, forming a tree-like structure of ideas or conversation threads. Your responses should be aware that you're part of a larger conversation flow, where previous nodes may provide context for the current discussion. Be prepared to handle context switches between nodes and maintain coherence within each conversation branch." },
           ...messages.map(msg => ({
             role: msg.sender === 'user' ? 'user' : 'assistant',
             content: msg.text
